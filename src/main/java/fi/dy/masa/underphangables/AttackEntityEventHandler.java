@@ -1,5 +1,7 @@
 package fi.dy.masa.underphangables;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
+import lotr.common.entity.item.LOTREntityBannerWall;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -14,8 +16,37 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
+import java.lang.reflect.Method;
+
 public class AttackEntityEventHandler
 {
+    private Method lotrGetBannerItem;
+
+    public AttackEntityEventHandler() {
+        try {
+            lotrGetBannerItem = findMethod(LOTREntityBannerWall.class,"getBannerItem");
+        }
+        catch (Exception ignored) {
+
+        }
+    }
+
+
+    public static <E> Method findMethod(Class<? super E> clazz, String methodName)
+    {
+        try
+        {
+            Method m = clazz.getDeclaredMethod(methodName);
+            m.setAccessible(true);
+            return m;
+        }
+        catch (Exception e)
+        {
+            throw new ReflectionHelper.UnableToFindMethodException(new String[] {methodName}, e);
+        }
+
+    }
+
     @SubscribeEvent
     public void onAttackEntityEvent(AttackEntityEvent event)
     {
@@ -55,6 +86,20 @@ public class AttackEntityEventHandler
             }
 
             event.setCanceled(true);
+        }
+        else if (event.target instanceof LOTREntityBannerWall lotrEntityBannerWall) {
+            if (!event.target.worldObj.isRemote)
+            {
+                try {
+                    ItemStack stack = (ItemStack) lotrGetBannerItem.invoke(lotrEntityBannerWall);
+                    dropItemWithAdjustedPosition(stack, event.target, getEntityYawFacing(event.target));
+                    event.target.setDead();
+                    event.setCanceled(true);
+                }
+                catch (Exception ignored) {
+
+                }
+            }
         }
     }
 
