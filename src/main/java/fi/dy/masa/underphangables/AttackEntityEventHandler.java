@@ -1,8 +1,5 @@
 package fi.dy.masa.underphangables;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -16,9 +13,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import cpw.mods.fml.relauncher.ReflectionHelper.UnableToAccessFieldException;
-import cpw.mods.fml.relauncher.ReflectionHelper.UnableToFindMethodException;
 
 public class AttackEntityEventHandler
 {
@@ -114,38 +108,12 @@ public class AttackEntityEventHandler
 
     public static void dropDisplayItemFromItemFrame(EntityItemFrame entityItemFrame, ItemStack stack, ForgeDirection facing)
     {
-        float dropChance = 1.0f;
-
-        try
-        {
-            dropChance = ReflectionHelper.getPrivateValue(EntityItemFrame.class, entityItemFrame, "field_82337_e", "itemDropChance");
-        }
-        catch (UnableToAccessFieldException e)
-        {
-            UnderpHangables.logger.warn("UnableToAccessFieldException while trying to get EntityItemFrame#itemDropChance");
-        }
+        float dropChance = entityItemFrame.itemDropChance;
 
         if (stack != null && stack.stackSize > 0 && stack.getItem() != null && entityItemFrame.worldObj.rand.nextFloat() < dropChance)
         {
             stack = stack.copy();
-            try
-            {
-                Method method = ReflectionHelper.findMethod(EntityItemFrame.class, entityItemFrame, new String[] {"func_110131_b", "removeFrameFromMap"}, ItemStack.class);
-                method.invoke(entityItemFrame, stack);
-            }
-            catch (UnableToFindMethodException e)
-            {
-                UnderpHangables.logger.warn("UnableToFindMethodException while trying to do EntityItemFrame#removeFrameFromMap()");
-            }
-            catch (InvocationTargetException e)
-            {
-                UnderpHangables.logger.warn("InvocationTargetException while trying to do EntityItemFrame#removeFrameFromMap()");
-            }
-            catch (IllegalAccessException e)
-            {
-                UnderpHangables.logger.warn("IllegalAccessException while trying to do EntityItemFrame#removeFrameFromMap()");
-            }
-
+            entityItemFrame.removeFrameFromMap(stack);
             dropItemWithAdjustedPosition(stack, entityItemFrame, facing);
         }
     }
