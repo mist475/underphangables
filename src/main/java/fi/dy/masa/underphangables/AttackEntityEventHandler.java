@@ -19,18 +19,17 @@ public class AttackEntityEventHandler
     @SubscribeEvent
     public void onAttackEntityEvent(AttackEntityEvent event)
     {
-        if (event.entityPlayer.capabilities.isCreativeMode == true ||
-            event.target.isEntityInvulnerable() == true)
+        if (event.entityPlayer.capabilities.isCreativeMode ||
+            event.target.isEntityInvulnerable())
         {
             return;
         }
 
-        if (event.target instanceof EntityItemFrame)
+        if (event.target instanceof EntityItemFrame entityItemFrame)
         {
-            EntityItemFrame entityItemFrame = (EntityItemFrame)event.target;
             ItemStack stack = entityItemFrame.getDisplayedItem();
 
-            if (event.target.worldObj.isRemote == false)
+            if (!event.target.worldObj.isRemote)
             {
                 if (stack != null)
                 {
@@ -48,7 +47,7 @@ public class AttackEntityEventHandler
         }
         else if (event.target instanceof EntityPainting)
         {
-            if (event.target.worldObj.isRemote == false)
+            if (!event.target.worldObj.isRemote)
             {
                 dropItemWithAdjustedPosition(new ItemStack(Items.painting), event.target, getEntityYawFacing(event.target));
 
@@ -61,7 +60,7 @@ public class AttackEntityEventHandler
 
     public static ForgeDirection getEntityYawFacing(Entity entity)
     {
-        byte yawToDir[] = {2, 5, 3, 4};
+        byte[] yawToDir = {2, 5, 3, 4};
         int yaw = MathHelper.floor_double((double)(entity.rotationYaw * 4.0f / 360.0f) + 0.5d) & 3;
 
         ForgeDirection facing = ForgeDirection.getOrientation(yawToDir[yaw]);
@@ -92,9 +91,6 @@ public class AttackEntityEventHandler
         double posX = entity.posX + facingToAdjustTo.offsetX * 0.15f;
         double posZ = entity.posZ + facingToAdjustTo.offsetZ * 0.15f;
         EntityItem entityItem = createEntityItemWithoutHorizontalMotion(stack, entity.worldObj, posX, entity.posY, posZ, 0.1d);
-
-        //System.out.println("adjusting towards " + facingToAdjustTo);
-        //System.out.println(String.format("post x: %.2f y: %.2f z: %.2f", entityItem.posX, entityItem.posY, entityItem.posZ));
 
         if (entity.captureDrops)
         {
