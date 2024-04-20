@@ -9,10 +9,10 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.MOD_VERSION, acceptableRemoteVersions="*")
+@Mod(modid = "underphangables", name = "Underp Hangables", version = Reference.MOD_VERSION, acceptableRemoteVersions="*")
 public class UnderpHangables
 {
-    @Instance(Reference.MOD_ID)
+    @Instance("underphangables")
     public static UnderpHangables instance;
 
     public static Logger logger;

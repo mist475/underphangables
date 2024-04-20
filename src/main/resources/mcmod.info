@@ -1,10 +1,10 @@
 [
 {
-  "modid": "underphangables",
-  "name": "Underp Hangables",
+  "modid": "${modId}",
+  "name": "${modName}",
   "description": "Fixes the derpyness of the dropped items from Paintings and Item Frames when they are broken.",
-  "version": "${mod_version}",
-  "mcversion": "${minecraft_version}",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
   "url": "http://minecraft.curseforge.com/projects/underp-hangables",
   "updateUrl": "",
   "authorList": ["masa"],
